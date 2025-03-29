@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<style>
+    .container {
+        padding: 20px;
+    }
+    .input-output {
+        display: flex;
+        gap: 20px;
+    }
+    .buttons {
+        margin-bottom: 10px;
+    }
+    textarea {
+        width: 300px;
+        height: 400px;
+    }
+    .output {
+        width: 300px;
+        height: 400px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="container">
+    <div class="buttons">
+        <button onclick="handleSearch()">搜索</button>
+        <button onclick="handleTable()">Table</button>
+        <button onclick="handleForm()">Form</button>
+    </div>
+    
+    <div class="input-output">
+        <textarea id="inputText" placeholder="请输入年份数据，每行格式为: nian    年份"></textarea>
+        <textarea id="outputText" class="output"></textarea>
+        <textarea id="queryParamsText" class="output"></textarea>
+    </div>
+</div>
+
+<script>
+function handleSearch() {
+    const input = document.getElementById('inputText').value;
+    const lines = input.split('\n');
+    let output = '';
+    let queryParamsObj = {};
+    
+    lines.forEach(line => {
+        if (line.trim()) {
+            const [field, label] = line.split(/\s+/);
+            if (label) {
+                output += `<el-form-item label="${label}" prop="${field}">
+            <el-input
+              v-model="queryParams.${field}"
+              placeholder="请输入${label}"
+              clearable
+              @keyup.enter="handleQuery"
+              :style="\`width: \${labelWidth}\`"
+            />
+          </el-form-item>\n\n`;
+                
+                queryParamsObj[field] = null;
+            }
+        }
+    });
+    
+    document.getElementById('outputText').value = output;
+    document.getElementById('queryParamsText').value = 'queryParams: ' + JSON.stringify(queryParamsObj, null, 2);
+}
+
+function handleTable() {
+    const input = document.getElementById('inputText').value;
+    const lines = input.split('\n');
+    let output = '';
+    
+    lines.forEach(line => {
+        if (line.trim()) {
+            const [field, label] = line.split(/\s+/);
+            if (label) {
+                output += `<el-table-column label="${label}" align="center" prop="${field}" />\n`;
+            }
+        }
+    });
+    
+    document.getElementById('outputText').value = output;
+}
+
+function handleForm() {
+    const input = document.getElementById('inputText').value;
+    const lines = input.split('\n');
+    let output = '';
+    let formObj = {
+        id: null
+    };
+    
+    lines.forEach(line => {
+        if (line.trim()) {
+            const [field, label] = line.split(/\s+/);
+            if (label) {
+                output += `<el-form-item label="${label}" prop="${field}">
+          <el-input
+            v-model="form.${field}"
+            placeholder="请输入${label}"
+            :style="\`width: \${labelWidth}\`"
+          />
+        </el-form-item>\n\n`;
+                
+                formObj[field] = null;
+            }
+        }
+    });
+    
+    document.getElementById('outputText').value = output;
+    document.getElementById('queryParamsText').value = 'form: ' + JSON.stringify(formObj, null, 2);
+}
+</script>
+</body>
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</html>
